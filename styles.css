@@ -243,6 +243,52 @@ button:disabled {
     color: #c62828;
 }
 
+#explain-btn {
+    background-color: #673ab7;
+}
+
+#explain-btn:hover {
+    background-color: #5e35b1;
+}
+
+.explanation {
+    margin: 16px 0;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    border-left: 4px solid #673ab7;
+}
+
+.explanation h1, 
+.explanation h2, 
+.explanation h3 {
+    color: #333;
+    margin-top: 0;
+}
+
+.explanation p {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+.explanation code {
+    background-color: #e8e8e8;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.explanation ul, 
+.explanation ol {
+    margin: 8px 0;
+    padding-left: 24px;
+}
+
+.explanation .error {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     body {

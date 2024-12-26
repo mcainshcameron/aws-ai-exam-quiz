@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AWS AI Exam Quiz</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div id="player-select" class="player-select">
@@ -42,8 +43,10 @@
 
         <button id="submit-btn">Submit Answer</button>
         <button id="next-btn" style="display: none;">Next Question</button>
+        <button id="explain-btn" style="display: none;">Explain</button>
         
         <div id="result" class="result"></div>
+        <div id="explanation" class="explanation" style="display: none;"></div>
 
         <div class="leaderboard">
             <h3>Leaderboard</h3>

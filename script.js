@@ -15,10 +15,19 @@ fetch('/streaks')
     });
 
 // Fetch questions from server
+console.log('Fetching questions from server...');
 fetch('/questions')
-    .then(response => response.json())
+    .then(response => {
+        console.log('Got response:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Loaded questions:', data);
         questions = data.questions;
+        console.log('Questions array:', questions);
+        if (currentPlayer) {
+            showRandomQuestion();
+        }
     })
     .catch(error => {
         console.error('Error loading questions:', error);
@@ -61,6 +70,9 @@ function showRandomQuestion() {
     // Reset UI state
     document.getElementById('submit-btn').style.display = 'block';
     document.getElementById('next-btn').style.display = 'none';
+    document.getElementById('explain-btn').style.display = 'none';
+    document.getElementById('explanation').style.display = 'none';
+    document.getElementById('explanation').innerHTML = '';
     const resultDiv = document.getElementById('result');
     resultDiv.textContent = ' ';
     resultDiv.className = 'result';
@@ -169,12 +181,10 @@ function checkAnswer() {
     resultDiv.textContent = isCorrect ? 'Correct! ✓' : 'Incorrect! ✗';
     resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'}`;
 
-    // Show next button and hide submit button
-    const submitBtn = document.getElementById('submit-btn');
-    const nextBtn = document.getElementById('next-btn');
-    
-    submitBtn.style.display = 'none';
-    nextBtn.style.display = 'block';
+    // Show next and explain buttons, hide submit button
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'block';
+    document.getElementById('explain-btn').style.display = 'block';
 }
 
 // Event Listeners
@@ -184,4 +194,42 @@ document.getElementById('submit-btn').addEventListener('click', () => {
     }
 });
 
+function getExplanation() {
+    const explainBtn = document.getElementById('explain-btn');
+    const explanationDiv = document.getElementById('explanation');
+    
+    explainBtn.disabled = true;
+    explainBtn.textContent = 'Loading...';
+    
+    fetch('/explain', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            question: currentQuestion.question,
+            options: Object.entries(currentQuestion.options).map(([key, value]) => `${key}: ${value}`),
+            correct_answer: Array.isArray(currentQuestion.correct_answer) ? 
+                currentQuestion.correct_answer : [currentQuestion.correct_answer]
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            explanationDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+        } else {
+            explanationDiv.innerHTML = marked.parse(data.explanation);
+        }
+        explanationDiv.style.display = 'block';
+        explainBtn.disabled = false;
+        explainBtn.textContent = 'Explain';
+    })
+    .catch(error => {
+        explanationDiv.innerHTML = '<p class="error">Failed to get explanation. Please try again.</p>';
+        explainBtn.disabled = false;
+        explainBtn.textContent = 'Explain';
+    });
+}
+
 document.getElementById('next-btn').addEventListener('click', showRandomQuestion);
+document.getElementById('explain-btn').addEventListener('click', getExplanation);
