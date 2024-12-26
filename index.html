@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS AI Exam Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="player-select" class="player-select">
+        <h1>AWS AI Exam Quiz</h1>
+        <h2>Select Player</h2>
+        <div class="player-buttons">
+            <button class="player-btn" data-player="Cameron">Cameron</button>
+            <button class="player-btn" data-player="Stefano">Stefano</button>
+            <button class="player-btn" data-player="Wissam">Wissam</button>
+            <button class="player-btn" data-player="Ludovico">Ludovico</button>
+            <button class="player-btn" data-player="Luca">Luca</button>
+            <button class="player-btn" data-player="Team AI">Team AI</button>
+        </div>
+    </div>
+
+    <div id="quiz-container" class="quiz-container" style="display: none;">
+        <div class="header">
+            <div class="player-info">
+                Playing as: <span id="current-player"></span>
+            </div>
+            <div class="stats-bar">
+                <div class="stat">
+                    <span class="stat-label">Score</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-type-badge" id="question-type"></div>
+        
+        <div id="question-container">
+            <p id="question-text"></p>
+            <div id="options-container"></div>
+        </div>
+
+        <button id="submit-btn">Submit Answer</button>
+        <button id="next-btn" style="display: none;">Next Question</button>
+        
+        <div id="result" class="result"></div>
+
+        <div class="leaderboard">
+            <h3>Leaderboard</h3>
+            <div id="leaderboard-list"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
