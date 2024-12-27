@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import openai
 from dotenv import load_dotenv
 
@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__, static_folder='.')
-app.secret_key = os.urandom(24)  # Add secret key for sessions
+app.secret_key = 'aws-exam-secret-key-2024'  # Fixed secret key for sessions
 
 # Load environment variables
 load_dotenv()
@@ -32,19 +32,46 @@ if not os.path.exists(STREAKS_FILE):
     with open(STREAKS_FILE, 'w') as f:
         json.dump(initial_streaks, f)
 
+# Password protection from environment variable
+PASSWORD = os.getenv("APP_PASSWORD", "aws2024")  # Default password for development
+
+from functools import wraps
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['password'] == PASSWORD:
+            session['logged_in'] = True
+            return redirect(url_for('index'))
+        error = 'Invalid password'
+    return render_template('login.html', error=error)
+
 @app.route('/')
+@login_required
 def index():
     return app.send_static_file('index.html')
 
 @app.route('/styles.css')
+@login_required
 def styles():
     return app.send_static_file('styles.css')
 
 @app.route('/script.js')
+@login_required
 def scripts():
     return app.send_static_file('script.js')
 
 @app.route('/questions')
+@login_required
 def get_questions():
     app.logger.debug('Loading questions from questions.json')
     file_path = 'questions.json'
@@ -67,12 +94,14 @@ def get_questions():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/streaks')
+@login_required
 def get_streaks():
     with open(STREAKS_FILE, 'r') as f:
         streaks = json.load(f)
     return jsonify(streaks)
 
 @app.route('/update_streak', methods=['POST'])
+@login_required
 def update_streak():
     data = request.json
     player = data['player']
@@ -94,6 +123,7 @@ def update_streak():
     return jsonify(streaks)
 
 @app.route('/explain', methods=['POST'])
+@login_required
 def explain():
     data = request.json
     question = data['question']
